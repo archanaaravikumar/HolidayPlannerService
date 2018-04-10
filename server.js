@@ -5,7 +5,7 @@ var express = require('express'),
   bodyParser = require('body-parser');
   
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/HolidayPlannerDB'); 
+mongoose.connect('mongodb://heroku_3tlgh59r:66eba40kn3cvdmomgbh7e30u7m@ds139929.mlab.com:39929/heroku_3tlgh59r'); 
 
 function ignoreFavicon(req, res, next) {
   if (req.originalUrl === '/favicon.ico') {
