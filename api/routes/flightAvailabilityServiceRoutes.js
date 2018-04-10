@@ -5,4 +5,6 @@ module.exports = function(app) {
 
   app.route('/flights')
     .get(flightAvailabilityController.fetch_all_flight_options);
+
 };
+
