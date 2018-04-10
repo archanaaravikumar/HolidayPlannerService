@@ -19,9 +19,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(ignoreFavicon);
 
-var routes = require('./api/routes/flightAvailabilityServiceRoutes');
+var flightRoutes = require('./api/routes/flightAvailabilityServiceRoutes');
+var alexaRoutes = require('./api/routes/alexaRoutes');
 
-routes(app);
+flightRoutes(app);
+alexaRoutes(app);
 
 app.listen(port);
 
