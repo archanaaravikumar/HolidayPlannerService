@@ -1,6 +1,6 @@
 'use strict';
 
-var actions = function (flightAvailabilityService, hotelAvailabilityService) {
+var actions = function (flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService) {
 
     var handleRequest = function (request, response) {
 
@@ -14,7 +14,13 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService) {
                 break;
             case "findflight":
                 handleSearchFlights(request.body.request.intent, (result) => response.json(JSON.parse(result)));
-             break;
+                break;
+            case "findbus":
+                handleSearchBuses(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                break;
+            case "findtrain":
+                handleSearchTrains(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                break;
             default:
                 break;
         }
@@ -25,7 +31,7 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService) {
         var to = intent.slots.to_date;
         var location = intent.slots.location;
         var hotelOptions = hotelAvailabilityService.fetch(from, to, location);
-        console.log("flights options " + hotelOptions);
+        console.log("hotels options " + hotelOptions);
         var result = `
             {
                 "version": "1.0",
@@ -50,6 +56,7 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService) {
 
         var from = intent.slots.from_location;
         var to = intent.slots.to_location;
+        var journeyDate = intent.slots.journey_date;
 
         var flightOptions = flightAvailabilityService.fetch(from, to);
 
@@ -67,6 +74,64 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService) {
                     "type": "Simple",
                     "title": "Flights",
                     "content": "${flightOptions} are available"
+                },
+                "shouldEndSession": true
+                }
+            }`;
+        next(result);
+    }
+
+    function handleSearchBuses(intent, next) {
+
+        var from = intent.slots.from_location;
+        var to = intent.slots.to_location;
+        var journeyDate = intent.slots.journey_date;
+
+        var busOptions = busAvailabilityService.fetch(from, to, journeyDate);
+
+        console.log("bus options " + busOptions);
+        var result = `
+            {
+                "version": "1.0",
+                "sessionAttributes": { },
+                "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": "${busOptions} are available"
+                },
+                "card": {
+                    "type": "Simple",
+                    "title": "Buses",
+                    "content": "${busOptions} are available"
+                },
+                "shouldEndSession": true
+                }
+            }`;
+        next(result);
+    }
+
+    function handleSearchTrains(intent, next) {
+
+        var from = intent.slots.from_location;
+        var to = intent.slots.to_location;
+        var journeyDate = intent.slots.journey_date;
+
+        var trainOptions = trainAvailabilityService.fetch(from, to, journeyDate);
+
+        console.log("train options " + trainOptions);
+        var result = `
+            {
+                "version": "1.0",
+                "sessionAttributes": { },
+                "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": "${trainOptions} are available"
+                },
+                "card": {
+                    "type": "Simple",
+                    "title": "Trains",
+                    "content": "${trainOptions} are available"
                 },
                 "shouldEndSession": true
                 }
