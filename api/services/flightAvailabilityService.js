@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var _ = require('underscore');
 
-exports.fetchFlights = function(from, to){
+exports.fetch = function(from, to){
 	console.log("Fetching flights");
-	return ["optionA", "optionB"];
+	return ["indigo", "jetAirways"];
 };
