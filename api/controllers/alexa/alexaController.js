@@ -1,5 +1,4 @@
 'use strict';
-const _ = require('underscore');
 
 let actions = function (requestHandlerFactory) {
 

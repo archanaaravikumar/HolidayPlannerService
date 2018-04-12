@@ -15,10 +15,34 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
             case "findtrain":
                 handleSearchTrains(request.body.request.intent, (result) => response.json(JSON.parse(result)));
                 break;
+            case "AMAZON.HelpIntent":
+                handlehelpRequest(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                break;
             default:
                 return response.status(404).send("Invalid request!");
                 break;
         }
+    }
+
+    function handlehelpRequest(intent, next) {
+        let result = `
+            {
+                "version": "1.0",
+                "sessionAttributes": { },
+                "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": "I can find flights, buses, trains, hotels for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
+                },
+                "card": {
+                    "type": "Simple",
+                    "title": "Hotels",
+                    "content": "I can find flights, buses, trains, hotels for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
+                },
+                "shouldEndSession": false
+                }
+            }`;
+        next(result);
     }
 
     function handleSearchHotels(intent, next) {

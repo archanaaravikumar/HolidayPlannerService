@@ -1,11 +1,13 @@
 
-function requestHandlerFactory(handleIntentRequest, handleLaunchRequest) {
+function requestHandlerFactory(handleIntentRequestHandler, handleLaunchRequestHandler, sessionEndRequestHandler) {
     function get(intentType) {
         switch (intentType) {
             case 'IntentRequest':
-                return handleIntentRequest;
+                return handleIntentRequestHandler;
             case 'LaunchRequest':
-                return handleLaunchRequest;
+                return handleLaunchRequestHandler;
+            case 'SessionEndRequest':
+                return sessionEndRequestHandler;
             default:
                 return;
         }
