@@ -1,8 +1,8 @@
 'use strict';
 
-var actions = function (flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService) {
+let actions = function (flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService) {
 
-    var handleRequest = function (request, response) {
+    let handleRequest = function (request, response) {
 
         if (request.body.request.type !== "IntentRequest") {
             return response.status(500).send("Invalid intent type");
@@ -27,12 +27,13 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService, bus
     };
 
     function handleSearchHotels(intent, next) {
-        var from = intent.slots.from_date;
-        var to = intent.slots.to_date;
-        var location = intent.slots.location;
-        var hotelOptions = hotelAvailabilityService.fetch(from, to, location);
+        let from = intent.slots.from_date.value;
+        let to = intent.slots.to_date.value;
+        let location = intent.slots.location.value;
+
+        let hotelOptions = hotelAvailabilityService.fetch(from, to, location);
         console.log("hotels options " + hotelOptions);
-        var result = `
+        let result = `
             {
                 "version": "1.0",
                 "sessionAttributes": { },
@@ -54,14 +55,14 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService, bus
 
     function handleSearchFlights(intent, next) {
 
-        var from = intent.slots.from_location;
-        var to = intent.slots.to_location;
-        var journeyDate = intent.slots.journey_date;
+        let from = intent.slots.from_location.value;
+        let to = intent.slots.to_location.value;
+        let journeyDate = intent.slots.travel_date.value;
 
-        var flightOptions = flightAvailabilityService.fetch(from, to);
+        let flightOptions = flightAvailabilityService.fetch(from, to, journeyDate);
 
         console.log("flights options " + flightOptions);
-        var result = `
+        let result = `
             {
                 "version": "1.0",
                 "sessionAttributes": { },
@@ -83,14 +84,14 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService, bus
 
     function handleSearchBuses(intent, next) {
 
-        var from = intent.slots.from_location;
-        var to = intent.slots.to_location;
-        var journeyDate = intent.slots.journey_date;
+        let from = intent.slots.from_location.value;
+        let to = intent.slots.to_location.value;
+        let journeyDate = intent.slots.journey_date.value;
 
-        var busOptions = busAvailabilityService.fetch(from, to, journeyDate);
+        let busOptions = busAvailabilityService.fetch(from, to, journeyDate);
 
         console.log("bus options " + busOptions);
-        var result = `
+        let result = `
             {
                 "version": "1.0",
                 "sessionAttributes": { },
@@ -112,14 +113,14 @@ var actions = function (flightAvailabilityService, hotelAvailabilityService, bus
 
     function handleSearchTrains(intent, next) {
 
-        var from = intent.slots.from_location;
-        var to = intent.slots.to_location;
-        var journeyDate = intent.slots.journey_date;
+        let from = intent.slots.from_location.value;
+        let to = intent.slots.to_location.value;
+        let journeyDate = intent.slots.journey_date.value;
 
-        var trainOptions = trainAvailabilityService.fetch(from, to, journeyDate);
+        let trainOptions = trainAvailabilityService.fetch(from, to, journeyDate);
 
         console.log("train options " + trainOptions);
-        var result = `
+        let result = `
             {
                 "version": "1.0",
                 "sessionAttributes": { },
