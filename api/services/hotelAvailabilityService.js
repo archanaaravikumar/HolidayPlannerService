@@ -1,10 +1,8 @@
-
 var functions = function (gatewayService) {
 
     function fetch(from, to, location) {
-        console.log("Fetching hotels");
-        return ["Ibis", "Novetel"];
-    };
+        return gatewayService.getHotelInCity(location);
+    }
 
     return {
         fetch: fetch
