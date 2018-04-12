@@ -1,13 +1,18 @@
 'use strict';
 
 module.exports = function (app) {
+
     var gatewayService = require('../services/goibiboGatewayService')();
     var hotelAvailabilityService = require('../services/hotelAvailabilityService')(gatewayService);
     var flightAvailabilityService = require('../services/flightAvailabilityService')(gatewayService);
     var busAvailabilityService = require('../services/busAvailabilityService')(gatewayService);
     var trainAvailabilityService = require('../services/trainAvailabilityService')(gatewayService);
 
-    var alexaController = require('../controllers/alexa/alexaController')(flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService);
+    var intentRequestHandler = require('../controllers/alexa/Handlers/intentRequestHandler')(flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService);
+    var launchRequestHandler = require('../controllers/alexa/Handlers/launchRequestHandler')();
+    var reqeustHandlerFactory = require('../controllers/alexa/Handlers/requestHandlerFactory')(intentRequestHandler, launchRequestHandler);
+    var alexaController = require('../controllers/alexa/alexaController')(reqeustHandlerFactory);
+
     app.route('/alexa').post(alexaController.handleRequest);
 };
 
