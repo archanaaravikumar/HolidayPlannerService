@@ -1,8 +1,19 @@
 var functions = function (gatewayService) {
 
-    function fetch(from, to, location) {
+    function fetch(from, to, journeyDate) {
         console.log("Fetching buses");
-        return ["Parveen travels at 5 PM from st johns", "Orange travels at 5.15 from st johns"];
+        var result = gatewayService.getBuses(from, to, journeyDate);
+        let buses = [];
+        const onwardFlights = result.data.onwardflights;
+
+        if (!onwardFlights || !onwardFlights.length)
+            return buses;
+
+        onwardFlights.slice(0, 5).forEach(element => {
+            buses.push(`${element.TravelsName} ${element.BusType} starts at ${element.DepartureTime} for ${element.fare.totalfare} Rupees`);
+        });
+
+        return buses;
     };
 
     return {
@@ -11,3 +22,5 @@ var functions = function (gatewayService) {
 };
 
 module.exports = functions;
+
+
