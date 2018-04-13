@@ -8,12 +8,12 @@ function launchRequestHandler() {
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "Welcome to holiday planner. I can find flights, buses, trains, hotels for your vacation. For e.g Find me a bus from chennai to bangalore"
+                    "text": "Welcome to holiday planner. I can find flights, buses, trains, hotels for your vacation. For example, Find me a bus from chennai to bangalore"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Hotels",
-                    "content": "Welcome to holiday planner. I can find flights, buses, trains, hotels for your vacation. For e.g Find me a bus from chennai to bangalore"
+                    "content": "Welcome to holiday planner. I can find flights, buses, trains, hotels for your vacation. For example, find me a bus from chennai to bangalore"
                 },
                 "shouldEndSession": false
                 }

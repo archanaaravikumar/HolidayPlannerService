@@ -61,12 +61,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${hotelOptions} are available"
+                    "text": "${hotelOptions}"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Hotels",
-                    "content": "${hotelOptions} are available"
+                    "content": "${hotelOptions}"
                 },
                 "shouldEndSession": true
                 }
@@ -89,20 +89,37 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${flightOptions} are available"
+                    "text": "${flightOptions}"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Flights",
-                    "content": "${flightOptions} are available"
+                    "content": "${flightOptions}"
                 },
                 "shouldEndSession": true
                 }
             }`;
             next(result);
+        }).catch(error => {
+            let result = `
+            {
+                "version": "1.0",
+                "sessionAttributes": { },
+                "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": "${error}"
+                },
+                "card": {
+                    "type": "Simple",
+                    "title": "Flights",
+                    "content": "${error}"
+                },
+                "shouldEndSession": false
+                }
+            }`;
+            next(result);
         });
-
-
     }
 
     function handleSearchBuses(intent, next) {
@@ -121,12 +138,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${busOptions} are available"
+                    "text": "${busOptions}"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Buses",
-                    "content": "${busOptions} are available"
+                    "content": "${busOptions}"
                 },
                 "shouldEndSession": true
                 }
@@ -150,12 +167,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${trainOptions} are available"
+                    "text": "${trainOptions}"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Trains",
-                    "content": "${trainOptions} are available"
+                    "content": "${trainOptions}"
                 },
                 "shouldEndSession": true
                 }
