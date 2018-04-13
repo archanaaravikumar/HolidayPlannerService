@@ -80,10 +80,9 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         let to = intent.slots.to_location.value;
         let journeyDate = intent.slots.travel_date.value;
 
-        let flightOptions = flightAvailabilityService.fetch(from, to, journeyDate);
-
-        console.log("flights options " + flightOptions);
-        let result = `
+        flightAvailabilityService.fetch(from, to, journeyDate).then(flightOptions => {
+            console.log("flights options " + flightOptions);
+            let result = `
             {
                 "version": "1.0",
                 "sessionAttributes": { },
@@ -100,7 +99,10 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "shouldEndSession": true
                 }
             }`;
-        next(result);
+            next(result);
+        });
+
+
     }
 
     function handleSearchBuses(intent, next) {
