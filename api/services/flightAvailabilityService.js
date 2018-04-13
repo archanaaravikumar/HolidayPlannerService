@@ -14,8 +14,9 @@ var functions = function (gatewayService) {
                     return flights;
 
                 onwardFlights.slice(0, 5).forEach(element => {
-                    let item = `${element.airline} departs at ${element.deptime} and arrives on ${element.arrdate} for ${element.fare.totalfare} Rupees`;
-                    flights.push(item);
+                    var arrivalDateString = `${element.arrdate.substr(0, element.arrdate.length - 2)}:${element.arrdate.substr(element.arrdate.length - 2)}`
+                    let flight = `${element.airline} departs at ${element.deptime} and arrives on ${new Date(Date.parse(arrivalDateString))} for ${element.fare.totalfare} Rupees`;
+                    flights.push(flight);
                 });
                 return resolve(flights);
             }).catch((error) => {

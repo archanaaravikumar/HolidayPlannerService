@@ -2,6 +2,13 @@ const axios = require("axios");
 
 var functions = function () {
 
+    function getYMDDate(date) {
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        return year + (month<=9 ? '0' + month : month) + (day <= 9 ? '0' + day : day);
+    }
+
     const appId = "fee90ad1";
     const appKey = "60acab403a86d82b895c4ad37ba92e8a";
 
@@ -19062,12 +19069,13 @@ var functions = function () {
 
         let departureAirportCode = getFlightCode(from);
         let arrivalAirportCode = getFlightCode(to);
+        let formattedDate = getYMDDate(journeyDate);
 
         return new Promise((resolve, reject) => {
 
             let fetchUrl = 'http://developer.goibibo.com/api/search/?app_id=' + appId + '&app_key=' + appKey +
                 '&format=json&source=' + departureAirportCode + '&destination=' + arrivalAirportCode +
-                '&dateofdeparture=20180501&seatingclass=E&adults=1&children=0&infants=0&counter=100';
+                '&dateofdeparture=' + formattedDate +'&seatingclass=E&adults=1&children=0&infants=0&counter=100';
 
             axios
                 .get(fetchUrl)

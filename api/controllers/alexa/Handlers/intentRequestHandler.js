@@ -78,7 +78,7 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
 
         let from = intent.slots.from_location.value;
         let to = intent.slots.to_location.value;
-        let journeyDate = intent.slots.travel_date.value;
+        let journeyDate = intent.slots.travel_date.value ? new Date(intent.slots.travel_date.value) : new Date();
 
         flightAvailabilityService.fetch(from, to, journeyDate).then(flightOptions => {
             console.log("flights options " + flightOptions);
