@@ -1,3 +1,5 @@
+const _ = require('underscore');
+
 var functions = function (gatewayService) {
 
     function fetch(from, to, journeyDate) {
@@ -6,14 +8,15 @@ var functions = function (gatewayService) {
         return new Promise(function executor(resolve, reject) {
 
             gatewayService.getBuses(from, to, journeyDate).then(result => {
-                console.log(result);
+                console.log(result.data.onwardflights);
+
                 let buses = [];
                 const onwardBuses = result.data.onwardflights;
 
                 if (!onwardBuses || !onwardBuses.length)
                     return resolve(buses);
 
-                onwardBuses.slice(0, 5).forEach(element => {
+                _.sortBy(onwardBuses, (bus) => bus.fare.totalfare).slice(0, 5).forEach(element => {
                     buses.push(`${element.TravelsName} ${element.BusType} starts at ${element.DepartureTime} for ${element.fare.totalfare} Rupees`);
                 });
                 return resolve(buses);

@@ -1,3 +1,5 @@
+const _ = require('underscore');
+
 var functions = function (gatewayService) {
 
     const dateFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -8,14 +10,15 @@ var functions = function (gatewayService) {
             console.log("Fetching flights");
 
             gatewayService.getFlights(from, to, journeyDate).then((result) => {
+                console.log(result.data.onwardflights);
+
                 let flights = [];
-                console.log(result);
                 const onwardFlights = result.data.onwardflights;
 
                 if (!onwardFlights || !onwardFlights.length)
                     return resolve(flights);
 
-                onwardFlights.slice(0, 5).forEach(element => {
+                _.sortBy(onwardFlights, (flight) => flight.fare.totalfare).slice(0, 5).forEach(element => {
                     var arrivalDateString = `${element.arrdate.substr(0, element.arrdate.length - 2)}:${element.arrdate.substr(element.arrdate.length - 2)}`
                     let flight = `${element.airline} departs at ${element.deptime} and arrives on ${new Date(Date.parse(arrivalDateString)).toLocaleDateString('en-IN', dateFormatOptions)} for ${element.fare.totalfare} Rupees`;
                     flights.push(flight);
