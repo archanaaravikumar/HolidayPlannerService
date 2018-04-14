@@ -14,10 +14,12 @@ function ignoreFavicon(req, res, next) {
     next();
   }
 }
+const verifyAlexaSkillRequest = require('./api/controllers/alexa/middlewares/validAlexaSkillRequestMiddleware');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(ignoreFavicon);
+app.use(verifyAlexaSkillRequest())
 
 var flightRoutes = require('./api/routes/flightAvailabilityServiceRoutes');
 var alexaRoutes = require('./api/routes/alexaRoutes');

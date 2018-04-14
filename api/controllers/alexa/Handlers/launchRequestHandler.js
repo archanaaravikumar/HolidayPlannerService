@@ -26,7 +26,7 @@ function launchRequestHandler() {
                     "shouldEndSession": false
                 }
             };
-        return response.json(JSON.parse(result))
+        return response.json(result)
     }
 
     return {
