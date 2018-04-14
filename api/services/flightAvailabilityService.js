@@ -1,5 +1,7 @@
 var functions = function (gatewayService) {
 
+    const dateFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+
     var fetch = function (from, to, journeyDate) {
 
         return new Promise(function executor(resolve, reject) {
@@ -11,11 +13,11 @@ var functions = function (gatewayService) {
                 const onwardFlights = result.data.onwardflights;
 
                 if (!onwardFlights || !onwardFlights.length)
-                    return flights;
+                    return resolve(flights);
 
                 onwardFlights.slice(0, 5).forEach(element => {
                     var arrivalDateString = `${element.arrdate.substr(0, element.arrdate.length - 2)}:${element.arrdate.substr(element.arrdate.length - 2)}`
-                    let flight = `${element.airline} departs at ${element.deptime} and arrives on ${new Date(Date.parse(arrivalDateString))} for ${element.fare.totalfare} Rupees`;
+                    let flight = `${element.airline} departs at ${element.deptime} and arrives on ${new Date(Date.parse(arrivalDateString)).toLocaleDateString('en-IN', dateFormatOptions)} for ${element.fare.totalfare} Rupees`;
                     flights.push(flight);
                 });
                 return resolve(flights);

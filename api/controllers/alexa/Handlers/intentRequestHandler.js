@@ -1,5 +1,9 @@
 function handler(flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService) {
 
+    const dateFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const endGreetingWords = 'Thank you for using holiday planner! Look forward to help you for the next trip.'
+    const localeCulture = 'en-IN';
+    
     function handleIntentRequest(request, response) {
 
         switch (request.body.request.intent.name) {
@@ -74,6 +78,11 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         next(result);
     }
 
+    function isMorethanOne(values)
+    {
+        return values && values.length && values.length > 1;
+    }
+
     function handleSearchFlights(intent, next) {
 
         let from = intent.slots.from_location.value;
@@ -81,7 +90,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         let journeyDate = intent.slots.travel_date.value ? new Date(intent.slots.travel_date.value) : new Date();
 
         flightAvailabilityService.fetch(from, to, journeyDate).then(flightOptions => {
-            console.log("flights options " + flightOptions);
+            console.log("flights options: " + flightOptions);
+
+            let responseText = `Sorry, no flights are available on ${journeyDate.toLocaleDateString(localeCulture, dateFormatOptions)} from ${from} to ${to}. ${endGreetingWords}`;
+            if (flightOptions && flightOptions.length)
+               responseText = `${flightOptions} ${isMorethanOne(flightOptions) ? "are" : "is"} available. ${endGreetingWords}`;
+
             let result = `
             {
                 "version": "1.0",
@@ -89,12 +103,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${flightOptions}"
+                    "text": "${responseText}"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Flights",
-                    "content": "${flightOptions}"
+                    "content": "${responseText}"
                 },
                 "shouldEndSession": true
                 }
@@ -126,29 +140,53 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
 
         let from = intent.slots.from_location.value;
         let to = intent.slots.to_location.value;
-        let journeyDate = intent.slots.journey_date.value;
+        let journeyDate = intent.slots.journey_date.value ? new Date(intent.slots.journey_date.value) : new Date();
 
-        let busOptions = busAvailabilityService.fetch(from, to, journeyDate);
+        let busOptions = busAvailabilityService.fetch(from, to, journeyDate).then(busOptions => {
 
-        console.log("bus options " + busOptions);
-        let result = `
+            console.log("bus options " + busOptions);
+            let responseText = `Sorry, no buses are available on ${journeyDate.toLocaleDateString(localeCulture, dateFormatOptions)} from ${from} to ${to}. ${endGreetingWords}`;
+            if (busOptions && busOptions.length)
+               responseText = `${busOptions} ${isMorethanOne(busOptions) ? "are" : "is"} available. ${endGreetingWords}`;
+
+            let result = `
             {
                 "version": "1.0",
                 "sessionAttributes": { },
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${busOptions}"
+                    "text": "${responseText}"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Buses",
-                    "content": "${busOptions}"
+                    "content": "${responseText}"
                 },
                 "shouldEndSession": true
                 }
             }`;
-        next(result);
+            next(result);
+        }).catch(error => {
+            let result = `
+            {
+                "version": "1.0",
+                "sessionAttributes": { },
+                "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": "${error}"
+                },
+                "card": {
+                    "type": "Simple",
+                    "title": "Buses",
+                    "content": "${error}"
+                },
+                "shouldEndSession": false
+                }
+            }`;
+            next(result);
+        });
     }
 
     function handleSearchTrains(intent, next) {
