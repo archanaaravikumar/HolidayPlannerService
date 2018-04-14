@@ -1,7 +1,7 @@
 function handler(flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService) {
 
     const DATE_FORMAT_OPTIONS = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const END_GREETING_WORDS = 'Thank you for using holiday planner! Look forward to help you for the next trip.'
+    const END_GREETING_WORDS = 'Goodbye! Thank you for using holiday planner! Look forward to help you for the next trip.'
     const LOCAL_CULTURE = 'en-IN';
     const INVALID_REQEST_RESPONSE_TEXT = "Sorry, can't understand the request. I can find flights and buses for your vacation. For example, find me a flight from bangalore to london";
     const HELP_MESSAGE = "I can find flights and buses for your vacation. For example find me a bus from chennai to bangalore, find me a flight from bangalore to london";
@@ -21,7 +21,11 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 handleSearchTrains(request.body.request.intent, (result) => response.json(result));
                 break;
             case "AMAZON.HelpIntent":
-                handlehelpRequest(request.body.request.intent, (result) => response.json(result));
+                handleHelpRequest((result) => response.json(result));
+                break;
+            case "AMAZON.CancelIntent":
+            case "AMAZON.StopIntent":
+                handleCancelRequest((result) => response.json(result));
                 break;
             default:
                 return response.status(404).send("Invalid request!");
@@ -29,8 +33,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         }
     }
 
-    function handlehelpRequest(intent, next) {
+    function handleHelpRequest(next) {
         next(getHelpMessage(HELP_MESSAGE));
+    }
+
+    function handleCancelRequest(next) {
+        next(getResponseMessage(END_GREETING_WORDS, "Goodbye"));
     }
 
     function handleSearchHotels(intent, next) {
@@ -44,8 +52,6 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         console.log("hotels options " + hotelOptions);
         next(getResponseMessage(`${hotelOptions}`));
     }
-
-
 
     function handleSearchFlights(intent, next) {
 
