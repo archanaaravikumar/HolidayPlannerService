@@ -8,12 +8,12 @@ function sessionEndRequestHandler() {
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "Goodbye. Happy to serve you again"
+                    "text": "Goodbye. Happy to serve you for your next trip!"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Hotels",
-                    "content": "Goodbye. Happy to serve you again"
+                    "content": "Goodbye. Happy to serve you for your next trip!"
                 },
                 "shouldEndSession": false
                 }

@@ -36,12 +36,18 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                 "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "I can find flights, buses, trains, hotels for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
+                    "text": "I can find flights and buses for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
                 },
                 "card": {
                     "type": "Simple",
                     "title": "Hotels",
-                    "content": "I can find flights, buses, trains, hotels for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
+                    "content": "I can find flights and buses for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
+                },
+                "reprompt": {
+                    "outputSpeech": {
+                      "type": "PlainText",
+                      "text": "I can find flights and buses for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
+                    }
                 },
                 "shouldEndSession": false
                 }
@@ -129,6 +135,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                     "title": "Flights",
                     "content": "${error}"
                 },
+                "reprompt": {
+                    "outputSpeech": {
+                      "type": "PlainText",
+                      "text": "I can find flights and buses for your vacation. For example, find me a flight from bangalore to london on May 3rd"
+                    }
+                },
                 "shouldEndSession": false
                 }
             }`;
@@ -181,6 +193,12 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
                     "type": "Simple",
                     "title": "Buses",
                     "content": "${error}"
+                },
+                "reprompt": {
+                    "outputSpeech": {
+                      "type": "PlainText",
+                      "text": "I can find buses and flights for your vacation. For example, Find me a bus from chennai to bangalore."
+                    }
                 },
                 "shouldEndSession": false
                 }
