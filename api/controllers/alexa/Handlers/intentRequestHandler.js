@@ -1,26 +1,27 @@
 function handler(flightAvailabilityService, hotelAvailabilityService, busAvailabilityService, trainAvailabilityService) {
 
-    const dateFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const endGreetingWords = 'Thank you for using holiday planner! Look forward to help you for the next trip.'
-    const localeCulture = 'en-IN';
-    
-    function handleIntentRequest(request, response) {
+    const DATE_FORMAT_OPTIONS = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const END_GREETING_WORDS = 'Thank you for using holiday planner! Look forward to help you for the next trip.'
+    const LOCAL_CULTURE = 'en-IN';
+    const INVALID_REQEST_RESPONSE_TEXT = "Sorry, can't understand the request. I can find flights and buses for your vacation. For example, find me a flight from bangalore to london";
+    const HELP_MESSAGE = "I can find flights and buses for your vacation. For example find me a bus from chennai to bangalore, find me a flight from bangalore to london";
 
+    function handleIntentRequest(request, response) {
         switch (request.body.request.intent.name) {
             case "findhotel":
-                handleSearchHotels(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                handleSearchHotels(request.body.request.intent, (result) => response.json(result));
                 break;
             case "findflight":
-                handleSearchFlights(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                handleSearchFlights(request.body.request.intent, (result) => response.json(result));
                 break;
             case "findbus":
-                handleSearchBuses(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                handleSearchBuses(request.body.request.intent, (result) => response.json(result));
                 break;
             case "findtrain":
-                handleSearchTrains(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                handleSearchTrains(request.body.request.intent, (result) => response.json(result));
                 break;
             case "AMAZON.HelpIntent":
-                handlehelpRequest(request.body.request.intent, (result) => response.json(JSON.parse(result)));
+                handlehelpRequest(request.body.request.intent, (result) => response.json(result));
                 break;
             default:
                 return response.status(404).send("Invalid request!");
@@ -29,30 +30,7 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
     }
 
     function handlehelpRequest(intent, next) {
-        let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "I can find flights and buses for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Hotels",
-                    "content": "I can find flights and buses for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
-                },
-                "reprompt": {
-                    "outputSpeech": {
-                      "type": "PlainText",
-                      "text": "I can find flights and buses for your vacation. For example Find me a bus from chennai to bangalore, find me a flight from bangalore to london on May 3rd"
-                    }
-                },
-                "shouldEndSession": false
-                }
-            }`;
-        next(result);
+        next(getHelpMessage(HELP_MESSAGE));
     }
 
     function handleSearchHotels(intent, next) {
@@ -64,32 +42,16 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         let hotelOptions = hotelAvailabilityService.fetch(from, to, location);
 
         console.log("hotels options " + hotelOptions);
-        let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "${hotelOptions}"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Hotels",
-                    "content": "${hotelOptions}"
-                },
-                "shouldEndSession": true
-                }
-            }`;
-        next(result);
+        next(getResponseMessage(`${hotelOptions}`));
     }
 
-    function isMorethanOne(values)
-    {
-        return values && values.length && values.length > 1;
-    }
+
 
     function handleSearchFlights(intent, next) {
+
+        if (!isValidRequest(intent)) {
+            return next(getHelpMessage(INVALID_REQEST_RESPONSE_TEXT));
+        }
 
         let from = intent.slots.from_location.value;
         let to = intent.slots.to_location.value;
@@ -97,113 +59,27 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
 
         flightAvailabilityService.fetch(from, to, journeyDate).then(flightOptions => {
             console.log("flights options: " + flightOptions);
-
-            let responseText = `Sorry, no flights are available on ${journeyDate.toLocaleDateString(localeCulture, dateFormatOptions)} from ${from} to ${to}. ${endGreetingWords}`;
-            if (flightOptions && flightOptions.length)
-               responseText = `${flightOptions} ${isMorethanOne(flightOptions) ? "are" : "is"} available. ${endGreetingWords}`;
-
-            let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "${responseText}"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Flights",
-                    "content": "${responseText}"
-                },
-                "shouldEndSession": true
-                }
-            }`;
-            next(result);
+            next(getResponseMessage(formatResponse(flightOptions, "flights", from, to, journeyDate), "flights"));
         }).catch(error => {
-            let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "${error}"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Flights",
-                    "content": "${error}"
-                },
-                "reprompt": {
-                    "outputSpeech": {
-                      "type": "PlainText",
-                      "text": "I can find flights and buses for your vacation. For example, find me a flight from bangalore to london on May 3rd"
-                    }
-                },
-                "shouldEndSession": false
-                }
-            }`;
-            next(result);
+            next(getHelpMessage(error));
         });
     }
 
     function handleSearchBuses(intent, next) {
+
+        if (!isValidRequest(intent)) {
+            return next(getHelpMessage(INVALID_REQEST_RESPONSE_TEXT));
+        }
 
         let from = intent.slots.from_location.value;
         let to = intent.slots.to_location.value;
         let journeyDate = intent.slots.journey_date.value ? new Date(intent.slots.journey_date.value) : new Date();
 
         let busOptions = busAvailabilityService.fetch(from, to, journeyDate).then(busOptions => {
-
             console.log("bus options " + busOptions);
-            let responseText = `Sorry, no buses are available on ${journeyDate.toLocaleDateString(localeCulture, dateFormatOptions)} from ${from} to ${to}. ${endGreetingWords}`;
-            if (busOptions && busOptions.length)
-               responseText = `${busOptions} ${isMorethanOne(busOptions) ? "are" : "is"} available. ${endGreetingWords}`;
-
-            let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "${responseText}"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Buses",
-                    "content": "${responseText}"
-                },
-                "shouldEndSession": true
-                }
-            }`;
-            next(result);
+            next(getResponseMessage(formatResponse(busOptions, "buses", from, to, journeyDate), "buses"));
         }).catch(error => {
-            let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
-                "outputSpeech": {
-                    "type": "PlainText",
-                    "text": "${error}"
-                },
-                "card": {
-                    "type": "Simple",
-                    "title": "Buses",
-                    "content": "${error}"
-                },
-                "reprompt": {
-                    "outputSpeech": {
-                      "type": "PlainText",
-                      "text": "I can find buses and flights for your vacation. For example, Find me a bus from chennai to bangalore."
-                    }
-                },
-                "shouldEndSession": false
-                }
-            }`;
-            next(result);
+            next(getHelpMessage(error));
         });
     }
 
@@ -214,26 +90,68 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         let journeyDate = intent.slots.journey_date.value;
 
         let trainOptions = trainAvailabilityService.fetch(from, to, journeyDate);
-
         console.log("train options " + trainOptions);
-        let result = `
-            {
-                "version": "1.0",
-                "sessionAttributes": { },
-                "response": {
+        next(getResponseMessage(`${trainOptions}`));
+    }
+
+    function isMorethanOne(values) {
+        return values && values.length && values.length > 1;
+    }
+
+    function isValidRequest(intent) {
+        return intent.slots.from_location.value && intent.slots.to_location.value;
+    }
+
+    function formatResponse(commuteValues, commuteType, from, to, journeyDate) {
+        let responseText = `Sorry, no ${commuteType} are available on ${journeyDate.toLocaleDateString(LOCAL_CULTURE, DATE_FORMAT_OPTIONS)} from ${from} to ${to}. ${END_GREETING_WORDS}`;
+        if (commuteValues && commuteValues.length) {
+            responseText = `${commuteValues} ${isMorethanOne(commuteValues) ? "are" : "is"} available. ${END_GREETING_WORDS}`;
+        }
+        return responseText;
+    }
+
+    function getResponseMessage(responseText, title) {
+        return {
+            "version": "1.0",
+            "sessionAttributes": {},
+            "response": {
                 "outputSpeech": {
                     "type": "PlainText",
-                    "text": "${trainOptions}"
+                    "text": responseText
                 },
                 "card": {
                     "type": "Simple",
-                    "title": "Trains",
-                    "content": "${trainOptions}"
+                    "title": title,
+                    "content": responseText
                 },
                 "shouldEndSession": true
-                }
-            }`;
-        next(result);
+            }
+        };
+    }
+
+    function getHelpMessage(error) {
+        return {
+            "version": "1.0",
+            "sessionAttributes": {},
+            "response": {
+                "outputSpeech": {
+                    "type": "PlainText",
+                    "text": error
+                },
+                "card": {
+                    "type": "Simple",
+                    "title": "Info",
+                    "content": error
+                },
+                "reprompt": {
+                    "outputSpeech": {
+                        "type": "PlainText",
+                        "text": HELP_MESSAGE
+                    }
+                },
+                "shouldEndSession": false
+            }
+        };
     }
 
     return {
