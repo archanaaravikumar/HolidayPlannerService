@@ -61,7 +61,7 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
 
         let from = intent.slots.from_location.value;
         let to = intent.slots.to_location.value;
-        let journeyDate = intent.slots.travel_date.value ? new Date(intent.slots.travel_date.value) : new Date();
+        let journeyDate = intent.slots.journey_date.value && isDate(intent.slots.journey_date.value) ? new Date(intent.slots.journey_date.value) : new Date();
 
         flightAvailabilityService.fetch(from, to, journeyDate).then(flightOptions => {
             console.log("flights options: " + flightOptions);
@@ -79,7 +79,7 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
 
         let from = intent.slots.from_location.value;
         let to = intent.slots.to_location.value;
-        let journeyDate = intent.slots.journey_date.value ? new Date(intent.slots.journey_date.value) : new Date();
+        let journeyDate = intent.slots.journey_date.value && isDate(intent.slots.journey_date.value) ? new Date(intent.slots.journey_date.value) : new Date();
 
         let busOptions = busAvailabilityService.fetch(from, to, journeyDate).then(busOptions => {
             console.log("bus options " + busOptions);
@@ -98,6 +98,10 @@ function handler(flightAvailabilityService, hotelAvailabilityService, busAvailab
         let trainOptions = trainAvailabilityService.fetch(from, to, journeyDate);
         console.log("train options " + trainOptions);
         next(getResponseMessage(`${trainOptions}`));
+    }
+
+     function isDate(dateString) {
+        return (new Date(dateString) !== "Invalid Date") && !isNaN(new Date(dateString));
     }
 
     function isMorethanOne(values) {
