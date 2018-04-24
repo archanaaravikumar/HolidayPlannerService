@@ -2,7 +2,8 @@ var express = require('express'),
   app = express(),
   port = process.env.PORT || 3000,
   mongoose = require('mongoose'),
-  bodyParser = require('body-parser');
+  bodyParser = require('body-parser'),
+  alexaSignatureVerifier = require('alexa-verifier');
   
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://heroku_3tlgh59r:66eba40kn3cvdmomgbh7e30u7m@ds139929.mlab.com:39929/heroku_3tlgh59r'); 
@@ -19,7 +20,8 @@ const verifyAlexaSkillRequest = require('./api/controllers/alexa/middlewares/val
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(ignoreFavicon);
-app.use(verifyAlexaSkillRequest())
+app.use(verifyAlexaSkillRequest());
+app.use(alexaSignatureVerifier);
 
 var flightRoutes = require('./api/routes/flightAvailabilityServiceRoutes');
 var alexaRoutes = require('./api/routes/alexaRoutes');
